@@ -35,21 +35,21 @@ namespace API.Controllers
             await _context.SaveChangesAsync();
 
             return new UserDTO{
-                UserName = user.UserName,
+                Username = user.UserName,
                 Token = _tokenService.CreateToken(user)
             };
         }
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO) {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == loginDTO.UserName.ToLower());
-            if(user is null) return Unauthorized();
+            if(user is null) return Unauthorized("invalid username");
             using var hmac = new HMACSHA512(user.PasswordSalt);
             var computeHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
             for(int i = 0; i< computeHash.Length;i++) {
                 if(computeHash[i] != user.PasswordHash[i]) return Unauthorized("Invalid password");
             }
             return new UserDTO {
-                UserName = user.UserName,
+                Username = user.UserName,
                 Token = _tokenService.CreateToken(user)
             };
         }
