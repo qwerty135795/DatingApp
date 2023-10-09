@@ -15,7 +15,8 @@
       </ng-container>
     </ul>
     <div dropdown class="dropdown" *ngIf="(accountService.currentUser$ | async) as user" >
-      <a dropdownToggle class="dropdown-toggle text-light text-decoration-none">Hello {{user.username}}</a>
+      <img src="{{user.photoUrl || './assets/user.png'}}" alt="user photo">
+      <a dropdownToggle class="dropdown-toggle text-light text-decoration-none ms-2">Hello {{user.username}}</a>
       <div class="dropdown-menu" *dropdownMenu="">
         <a  class="dropdown-item" routerLink="/member/edit">Edit Profile</a>
         <a  class="dropdown-item" (click)="logout()">Logout</a>
