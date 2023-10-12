@@ -60,7 +60,11 @@ export class MembersService {
     .reduce((arr,elem) => arr.concat(elem.result),[])
     .find((member:Member) => member.userName === username);
     if(member) return of(member);
-    return this.http.get<Member>(this.baseUrl + 'users/' + username);
+    if( this.members.find(user => user.userName == username)) return of(this.members.find(u => u.userName === username))
+    return this.http.get<Member>(this.baseUrl + 'users/' + username).pipe(map(user => {
+      this.members.push(user);
+      return of(user)
+    }));
   }
   updateMember(member: Member) {
     return this.http.put(this.baseUrl + 'users', member).pipe(map(() => {
@@ -74,8 +78,14 @@ export class MembersService {
   deletePhoto(photoId: number) {
     return this.http.delete(this.baseUrl + 'users/delete-photo/' + photoId)
   }
-
-
+  addLike(userName:string) {
+    return this.http.post(this.baseUrl + 'likes/'+ userName,{});
+  }
+  getLikes(predicate:string,pageNumber:number,pageSize:number) {
+    let params = this.getPaginationHeaders(pageNumber,pageSize);
+    params = params.append('predicate',predicate);
+    return this.getPaginationResult<Member[]>(this.baseUrl + 'likes',params);
+  }
 
 
   private getPaginationResult<T>(url:string,params: HttpParams) {
