@@ -13,20 +13,16 @@ import { MessageService } from 'src/app/_services/message.service';
   imports: [CommonModule, TimeagoModule,FormsModule]
 })
 export class MemberMessagesComponent implements OnInit {
-  @Input()messages:Message[] = [];
   @Input() username?:string;
   @ViewChild('form') messageForm: NgForm | undefined;
-  constructor(private messageService:MessageService) {}
+  constructor(public messageService:MessageService) {}
   ngOnInit(): void {
   }
   messageContent = '';
   sendMessage() {
     if(!this.username) return;
-    this.messageService.sendMessage(this.username,this.messageContent).subscribe({
-      next: response => {
-        this.messageForm?.reset();
-        this.messages.push(response);
-      }
+    this.messageService.sendMessage(this.username,this.messageContent).then(() => {
+      this.messageForm?.reset();
     });
   }
 
